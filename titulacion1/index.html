@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proceso de Titulación - ITSA</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Estilos personalizados -->
+    <style>
+        /* Estilo para un scrollbar más sutil en el contenido principal */
+        main::-webkit-scrollbar { width: 8px; }
+        main::-webkit-scrollbar-thumb { background-color: #c4c4c4; border-radius: 4px; }
+        main::-webkit-scrollbar-track { background-color: #f1f1f1; }
+
+        /* Clase para el enlace activo de la barra lateral */
+        .nav-link-active {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            color: #14532d; /* text-green-900 */
+            font-weight: 600; /* semibold */
+        }
+        .nav-link-inactive {
+            color: #ffffff; /* text-white */
+        }
+        .nav-link-inactive:hover {
+            background-color: #15803d; /* hover:bg-green-700 */
+        }
+
+        /* ===== ESTILOS PARA EL CHATBOT ===== */
+        /* Scrollbar para la ventana del chat */
+        #chat-window::-webkit-scrollbar { width: 6px; }
+        #chat-window::-webkit-scrollbar-thumb { background-color: #9ca3af; border-radius: 3px; }
+        #chat-window::-webkit-scrollbar-track { background-color: #e5e7eb; }
+
+        /* Estilos de las burbujas del chat */
+        .chat-bubble {
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .user-bubble {
+            background-color: #166534; /* green-800 */
+            color: white;
+            align-self: flex-end; /* Alineado a la derecha */
+        }
+        .bot-bubble {
+            background-color: #e5e7eb; /* bg-gray-200 */
+            color: #1f2937; /* text-gray-800 */
+            align-self: flex-start; /* Alineado a la izquierda */
+        }
+
+        /* ===== ESTILOS PARA EL CRONOGRAMA ===== */
+        /* Línea de conexión para el timeline de escritorio */
+        @media (min-width: 1024px) {
+            .timeline-item-lg:not(:last-child)::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                right: 0;
+                transform: translateX(100%) translateY(-50%);
+                width: 50%; /* Ajusta según el 'gap' */
+                height: 4px;
+                background-color: #166534; /* green-800 */
+                z-index: 0;
+            }
+        }
+        /* Línea de conexión para el timeline de móvil */
+        @media (max-width: 1023px) {
+            .timeline-item-md:not(:last-child)::after {
+                content: '';
+                position: absolute;
+                left: 2rem; /* Alineado con el icono */
+                bottom: 0;
+                transform: translateX(-50%) translateY(100%);
+                width: 4px;
+                height: 3rem; /* 'gap-y-12' */
+                background-color: #166534; /* green-800 */
+                z-index: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div class="flex h-screen bg-gray-100">
+        <!-- Barra lateral para escritorio (oculta en móvil) -->
+        <aside class="hidden md:flex w-64 flex-col bg-green-900 text-white p-6 shadow-lg">
+            <!-- Logo -->
+            <div class="flex items-center justify-center mb-8 h-16">
+                <!-- Simulación del logo ITSA-->
+                <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full">
+                    <span class="text-green-900 text-3xl font-bold">ITS</span>
+                </div>
+            </div>
+            
+            <nav id="desktop-nav" class="flex flex-col space-y-2">
+                <a href="javascript:void(0)" onclick="showSection('inicio')" data-section="inicio" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Inicio</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showSection('requisitos')" data-section="requisitos" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                    <span>Requisitos</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showSection('cronograma')" data-section="cronograma" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                    <span>Cronograma</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showSection('pasos')" data-section="pasos" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+                    <span>Pasos del proceso</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showSection('faq')" data-section="faq" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    <span>Preguntas frecuentes</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showSection('contacto')" data-section="contacto" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    <span>Contacto</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Contenedor principal (incluye header móvil y contenido) -->
+        <div class="flex-1 flex flex-col h-screen">
+            <!-- Header para móvil -->
+            <header class="md:hidden bg-green-900 text-white p-4 shadow-lg flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="flex items-center justify-center w-10 h-10 bg-white rounded-full">
+                        <span class="text-green-900 text-xl font-bold">ITS</span>
+                    </div>
+                    <span class="text-lg font-semibold">INSTITUTO TECNOLÓGICO SACABA</span>
+                </div>
+                <!-- Botón de Hamburguesa -->
+                <button id="menu-btn" class="text-white p-2 rounded-md hover:bg-green-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </button>
+            </header>
+
+            <!-- Menú desplegable para móvil (oculto por defecto) -->
+            <nav id="mobile-menu" class="hidden md:hidden bg-green-900 text-white p-4 space-y-2">
+                <a href="javascript:void(0)" onclick="showSection('inicio')" data-section="inicio" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Inicio</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showSection('requisitos')" data-section="requisitos" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                    <span>Requisitos</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showSection('cronograma')" data-section="cronograma" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                    <span>Cronograma</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showSection('pasos')" data-section="pasos" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+                    <span>Pasos del proceso</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showSection('faq')" data-section="faq" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    <span>Preguntas frecuentes</span>
+                </a>
+                <a href="javascript:void(0)" onclick="showSection('contacto')" data-section="contacto" class="nav-link flex items-center space-x-3 p-3 rounded-lg transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    <span>Contacto</span>
+                </a>
+            </nav>
+
+            <!-- Área de contenido principal -->
+            <main class="flex-1 overflow-y-auto p-6 md:p-10">
+                
+                <!-- SECCIÓN INICIO -->
+                <div id="inicio-section" class="content-section">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">INICIO</h1>
+                    
+                    <!-- Diagrama de flujo -->
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <div class="flex flex-col md:flex-row items-center justify-around space-y-4 md:space-y-0 text-gray-600">
+                            <!-- Icono Documento -->
+                            <div class="flex flex-col items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text text-green-700"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                                <span class="mt-2 text-sm font-medium">Revisión de</span>
+                                <span class="text-sm">Documentos</span>
+                            </div>
+                            
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right hidden md:block text-gray-400"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down md:hidden text-gray-400"><line x1="12" x2="12" y1="5" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+
+                            <!-- Icono Defensa (Edificio/Universidad) -->
+                            <div class="flex flex-col items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-school text-green-700"><path d="m4 6 8-4 8 4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M14 22v-4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v4"/><path d="M18 5v17"/><path d="M22 5v17"/><path d="M2 10v12"/></svg>
+                                <span class="mt-2 text-sm font-medium">Defensa de</span>
+                                <span class="text-sm">Proyecto</span>
+                            </div>
+
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right hidden md:block text-gray-400"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down md:hidden text-gray-400"><line x1="12" x2="12" y1="5" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+
+                            <!-- Icono Calendario (Entrega Título) -->
+                            <div class="flex flex-col items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-check text-green-700"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="m9 16 2 2 4-4"/></svg>
+                                <span class="mt-2 text-sm font-medium">Entrega de</span>
+                                <span class="text-sm">Título</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección de acceso rápido (como en la imagen) -->
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">CRONOGRAMA Y DOCUMENTOS</h2>
+                    <p class="text-gray-600 mb-6">Descripción breve del servicio o trámite. Accede a los formularios y reglamentos actualizados para iniciar tu proceso.</p>
+                    
+                    <div class="flex flex-col md:flex-row gap-4 mb-8">
+                        <!-- Botón 1: Enlace directo al PDF -->
+                        <a href="https://eispdm.com/public/imagenes/documentos/FMDG-1.pdf" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="flex-1 bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-800 transition-colors duration-300 text-center">
+                            Formulario FMDG-1
+                        </a>
+                        
+                        <!-- Botón 2: Enlace de descarga de Google Drive -->
+                        <a href="https://drive.google.com/uc?export=download&id=1COzD76GQID_zMDuppXxgx4LeJxTy3y_g" 
+                           download="Reglamento-Titulacion.pdf"
+                           class="flex-1 bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-800 transition-colors duration-300 text-center">
+                            Reglamento
+                        </a>
+                    </div>
+
+                    <!-- Placeholders -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <!-- Placeholder Video -->
+                        <div class="bg-gray-200 rounded-lg shadow-md aspect-video flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-video text-gray-500"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
+                        </div>
+                        <!-- Placeholder Imagen (Cohete) -->
+                        <div class="bg-blue-100 rounded-lg shadow-md aspect-video flex items-center justify-center p-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rocket text-blue-500"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.3.09-3.1a5.88 5.88 0 0 0-3.11-3.1c-.8-.6-2.26-.71-3.1-.1z"/><path d="m12 15 9-9"/><path d="M9.5 3.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.3.09-3.1a5.88 5.88 0 0 0-3.11-3.1c-.8-.6-2.26-.71-3.1-.1z"/><path d="M15 12 3.5 20.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.3.09-3.1a5.88 5.88 0 0 0-3.11-3.1c-.8-.6-2.26-.71-3.1-.1z"/><path d="M22 22s-4-4-7-7"/></svg>
+                            <p class="ml-4 text-blue-700 font-semibold text-lg">Impulsa tu carrera al siguiente nivel.</p>
+                        </div>
+                    </div>
+
+                    <!-- Botón centrado -->
+                    <div class="flex justify-center">
+                        <button id="open-chat-btn" class="w-full md:w-auto bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-green-700 transition-transform duration-300 transform hover:scale-105">
+                            Solicitar Ayuda
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- SECCIÓN REQUISITOS -->
+                <div id="requisitos-section" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Requisitos de titulación</h1>
+                    <p class="text-lg text-gray-600 mb-8">
+                        Asegúrate de cumplir con todos los requisitos divididos en las siguientes categorías para iniciar tu proceso.
+                    </p>
+                
+                    <!-- Contenedor de la cuadrícula -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                        <!-- Card 1: Requisitos Académicos -->
+                        <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                            <div class="flex items-center mb-5">
+                                <span class="p-3 bg-green-100 text-green-800 rounded-full mr-4 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-marked"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M14 15V9h-2v6"/></svg>
+                                </span>
+                                <h3 class="text-2xl font-bold text-gray-800">1. Académicos</h3>
+                            </div>
+                            <ul class="list-none space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Haber concluido y aprobado todas las materias del plan de estudios.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>No tener materias reprobadas ni pendientes de notas o prácticas.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Haber cumplido con la práctica laboral o comunitaria (PEC), certificada (original y copia).</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Informe del docente supervisor de práctica laboral.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Informe de pre-defensa según modalidad de graduación.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>3 ejemplares del proyecto empastado (forro verde oscuro, letras doradas).</span>
+                                </li>
+                            </ul>
+                        </div>
+                
+                        <!-- Card 2: Documentación Personal -->
+                        <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                            <div class="flex items-center mb-5">
+                                <span class="p-3 bg-green-100 text-green-800 rounded-full mr-4 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-open"><path d="M11 20H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v1.5"/><path d="M22 19a2 2 0 0 1-2 2H7.5a2 2 0 0 1-1.6-.8L2 12V7.1a2 2 0 0 1 1.4-.8L4.6 6H7a2 2 0 0 1 2 2v1"/><path d="M22 19v-2.5a1.5 1.5 0 0 0-1.5-1.5v0a1.5 1.5 0 0 0-1.5 1.5V19"/></svg>
+                                </span>
+                                <h3 class="text-2xl font-bold text-gray-800">2. Documentación</h3>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-4 -mt-2">En carpeta de color institucional según carrera.</p>
+                            <ul class="list-none space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Diploma de bachiller (fotocopia legalizada).</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Certificado de nacimiento (fotocopia legalizada).</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Carnet de identidad vigente (fotocopia legalizada).</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>2 fotografías 4x4 (color, fondo rojo/azul, ropa formal).</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Formulario de admisión (disponible <a href="http://orion.itsa.edu.bo/postulantes/registrarPostulante.xhtml" target="_blank" rel="noopener noreferrer" class="text-green-700 hover:underline font-medium">en línea aquí</a>).</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Constancia de defensa o proyecto de grado.</span>
+                                </li>
+                            </ul>
+                        </div>
+                
+                        <!-- Card 3: Requisitos Institucionales -->
+                        <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                            <div class="flex items-center mb-5">
+                                <span class="p-3 bg-green-100 text-green-800 rounded-full mr-4 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-school"><path d="m4 6 8-4 8 4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M14 22v-4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v4"/><path d="M18 5v17"/><path d="M22 5v17"/><path d="M2 10v12"/></svg>
+                                </span>
+                                <h3 class="text-2xl font-bold text-gray-800">3. Institucionales</h3>
+                            </div>
+                            <ul class="list-none space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Formulario FMDG-1 (descargable en la sección 'Inicio').</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Comprobante de pago de aranceles administrativos.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Carta de solicitud dirigida al Director Académico.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Reglamento de titulación firmado (aceptando normas).</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Fotocopia de papeleta de pago por derecho a defensa.</span>
+                                </li>
+                            </ul>
+                        </div>
+                
+                        <!-- Card 4: Modalidades de Titulación -->
+                        <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                            <div class="flex items-center mb-5">
+                                <span class="p-3 bg-green-100 text-green-800 rounded-full mr-4 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gantt-chart-square"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 8h-3"/><path d="M18 8h-6"/><path d="M9 13h-3"/><path d="M18 13h-6"/><path d="M9 18h-3"/><path d="M18 18h-6"/></svg>
+                                </span>
+                                <h3 class="text-2xl font-bold text-gray-800">4. Modalidades</h3>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-4 -mt-2">Modalidades de titulación disponibles:</p>
+                            <ul class="list-none space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Proyecto de grado</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Examen de grado</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Trabajo dirigido</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Excelencia académica</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Equivalencia de título</span>
+                                </li>
+                            </ul>
+                        </div>
+                
+                        <!-- Card 5: Requisitos Complementarios -->
+                        <div class="bg-white p-6 rounded-lg shadow-md flex flex-col lg:col-span-2">
+                            <div class="flex items-center mb-5">
+                                <span class="p-3 bg-green-100 text-green-800 rounded-full mr-4 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2Z"/><path d="m9 12 2 2 4-4"/></svg>
+                                </span>
+                                <h3 class="text-2xl font-bold text-gray-800">5. Complementarios</h3>
+                            </div>
+                            <ul class="list-none space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Certificado de no adeudo de biblioteca, laboratorio y caja.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Certificación de práctica profesional o comunitaria.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-green-600 w-5 h-5 flex-shrink-0 mr-2 mt-1"><path d="m9 18 6-6-6-6"/></svg>
+                                    <span>Informe final o defensa del proyecto (una vez inscrito).</span>
+                                </li>
+                            </ul>
+                        </div>
+                
+                    </div> <!-- end grid -->
+
+                    <!-- Sección de Descargas Oficiales -->
+                    <div class="mt-12 bg-white p-6 md:p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <!-- Icono para la sección -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-stack text-green-700 mr-3"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.5L10 2z"/><path d="M14 2H6a2 2 0 0 0-2 2v2"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h2"/></svg>
+                            Reglamentos y documentos oficiales
+                        </h2>
+                        <p class="text-gray-600 mb-6">Aquí puedes descargar los documentos oficiales necesarios para tu modalidad de graduación.</p>
+                        
+                        <ul class="space-y-4">
+                            <!-- Item 1: Convocatoria -->
+                            <li class="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                                <div class="flex items-center mb-3 md:mb-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-type-pdf text-red-600 mr-3 flex-shrink-0"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.5L14.5 2z"/><path d="M8 18h1.5a1.5 1.5 0 0 0 0-3H8v3Z"/><path d="M17.5 18h1.5a1.5 1.5 0 0 0 0-3h-1.5v3Z"/><path d="M11 18h1.5a1.5 1.5 0 0 0 0-3H11v3Z"/><path d="M14.5 12h-5V9h5v3Z"/></svg>
+                                    <span class="font-medium text-gray-700">Convocatoria a defensa de proyecto</span>
+                                </div>
+                                <a href="https://drive.google.com/uc?export=download&id=1EygS4_hkU_WYtHzQdeAD-vxRfTejqCpU" download="Convocatoria-Defensa-Proyecto.pdf" class="flex-shrink-0 bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-800 transition-colors duration-300 text-sm flex items-center justify-center space-x-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                    <span>Descargar</span>
+                                </a>
+                            </li>
+                            <!-- Item 2: Requisitos Defensa -->
+                            <li class="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                                <div class="flex items-center mb-3 md:mb-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-type-pdf text-red-600 mr-3 flex-shrink-0"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.5L14.5 2z"/><path d="M8 18h1.5a1.5 1.5 0 0 0 0-3H8v3Z"/><path d="M17.5 18h1.5a1.5 1.5 0 0 0 0-3h-1.5v3Z"/><path d="M11 18h1.5a1.5 1.5 0 0 0 0-3H11v3Z"/><path d="M14.5 12h-5V9h5v3Z"/></svg>
+                                    <span class="font-medium text-gray-700">Requisitos para la defensa de proyecto</span>
+                                </div>
+                                <a href="https://drive.google.com/uc?export=download&id=1cc5jsFRyt7Swh8sgIbX9SeBiS1hdEoCM" download="Requisitos-Defensa-Proyecto.pdf" class="flex-shrink-0 bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-800 transition-colors duration-300 text-sm flex items-center justify-center space-x-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                    <span>Descargar</span>
+                                </a>
+                            </li>
+                            <!-- Item 3: Estructura Perfil -->
+                            <li class="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                                <div class="flex items-center mb-3 md:mb-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-type-pdf text-red-600 mr-3 flex-shrink-0"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.5L14.5 2z"/><path d="M8 18h1.5a1.5 1.5 0 0 0 0-3H8v3Z"/><path d="M17.5 18h1.5a1.5 1.5 0 0 0 0-3h-1.5v3Z"/><path d="M11 18h1.5a1.5 1.5 0 0 0 0-3H11v3Z"/><path d="M14.5 12h-5V9h5v3Z"/></svg>
+                                    <span class="font-medium text-gray-700">Estructura para elaborar propuesta de perfil</span>
+                                </div>
+                                <a href="https://drive.google.com/uc?export=download&id=1JuuFS8foW2M1F7h9_ZOeNTjCCHddq13q" download="Estructura-Propuesta-Perfil.pdf" class="flex-shrink-0 bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-800 transition-colors duration-300 text-sm flex items-center justify-center space-x-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                    <span>Descargar</span>
+                                </a>
+                            </li>
+                            <!-- Item 4: Elaboración Pre-Defensa -->
+                            <li class="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                                <div class="flex items-center mb-3 md:mb-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-type-pdf text-red-600 mr-3 flex-shrink-0"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.5L14.5 2z"/><path d="M8 18h1.5a1.5 1.5 0 0 0 0-3H8v3Z"/><path d="M17.5 18h1.5a1.5 1.5 0 0 0 0-3h-1.5v3Z"/><path d="M11 18h1.5a1.5 1.5 0 0 0 0-3H11v3Z"/><path d="M14.5 12h-5V9h5v3Z"/></svg>
+                                    <span class="font-medium text-gray-700">Elaboración de pre-defensa</span>
+                                </div>
+                                <a href="https://drive.google.com/uc?export=download&id=1yO4BJUaiJfBzFhg4lgp1_U4aOJKrTjk_" download="Elaboracion-Pre-Defensa.pdf" class="flex-shrink-0 bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-800 transition-colors duration-300 text-sm flex items-center justify-center space-x-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                    <span>Descargar</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN CRONOGRAMA -->
+                <div id="cronograma-section" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Cronograma de titulación</h1>
+                    <p class="text-lg text-gray-600 mb-12">
+                        Revisa las fases y fechas clave de tu proceso de titulación.
+                    </p>
+                    
+                    <!-- Contenedor del Timeline: 
+                         - 'lg:grid-cols-3' para 3 tarjetas por fila en escritorio.
+                         - 'gap-x-16' para el espacio de la línea.
+                         - 'lg:gap-y-16' para espacio entre filas.
+                         - 'flex-col' para móvil.
+                    -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-16 gap-y-12 lg:gap-y-16">
+
+                        <!-- FASE 1: Inscripción -->
+                        <div class="flex flex-col lg:items-center text-center lg:text-left lg:relative timeline-item-lg timeline-item-md">
+                            <!-- Icono -->
+                            <div class="flex items-center justify-center w-16 h-16 bg-green-800 text-white rounded-full shadow-lg mb-4 lg:mb-0 lg:absolute lg:top-0 lg:-left-8 z-10 border-4 border-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-plus-2"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M3 15h6"/><path d="M6 12v6"/></svg>
+                            </div>
+                            <!-- Tarjeta de contenido -->
+                            <div class="bg-white p-6 rounded-lg shadow-xl border w-full lg:ml-12">
+                                <span class="text-sm font-bold text-green-700">Abril - Junio</span>
+                                <h3 class="text-xl font-bold text-gray-800 my-2">Fase 1: Inscripción</h3>
+                                <p class="text-gray-700 font-medium mb-3 text-sm">Presentación de solicitud y documentación inicial.</p>
+                                <ul class="list-none space-y-2 text-gray-600 text-sm text-left">
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Llenado del formulario FMDG-1</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Registro en el sistema</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Entrega de documentos básicos</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- FASE 2: Aprobación de Perfil -->
+                        <div class="flex flex-col lg:items-center text-center lg:text-left lg:relative timeline-item-lg timeline-item-md">
+                            <!-- Icono -->
+                            <div class="flex items-center justify-center w-16 h-16 bg-green-800 text-white rounded-full shadow-lg mb-4 lg:mb-0 lg:absolute lg:top-0 lg:-left-8 z-10 border-4 border-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-check-2"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M3 15h6"/><path d="m9 15 2 2 4-4"/></svg>
+                            </div>
+                            <!-- Tarjeta -->
+                            <div class="bg-white p-6 rounded-lg shadow-xl border w-full lg:ml-12">
+                                <span class="text-sm font-bold text-green-700">Febrero - Junio</span>
+                                <h3 class="text-xl font-bold text-gray-800 my-2">Fase 2: Aprobación de Perfil</h3>
+                                <p class="text-gray-700 font-medium mb-3 text-sm">Presentación y aprobación del perfil de proyecto.</p>
+                                <ul class="list-none space-y-2 text-gray-600 text-sm text-left">
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Presentación del perfil</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Revisión por tutor</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Correcciones y aprobación</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- FASE 3: Defensa de perfiles -->
+                        <div class="flex flex-col lg:items-center text-center lg:text-left lg:relative timeline-item-lg timeline-item-md">
+                            <!-- Icono -->
+                            <div class="flex items-center justify-center w-16 h-16 bg-green-800 text-white rounded-full shadow-lg mb-4 lg:mb-0 lg:absolute lg:top-0 lg:-left-8 z-10 border-4 border-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gantt-chart"><path d="M8 6h10"/><path d="M6 12h9"/><path d="M11 18h7"/></svg>
+                            </div>
+                            <!-- Tarjeta -->
+                            <div class="bg-white p-6 rounded-lg shadow-xl border w-full lg:ml-12">
+                                <span class="text-sm font-bold text-green-700">Junio 12 - 31</span>
+                                <h3 class="text-xl font-bold text-gray-800 my-2">Fase 3: Defensa de perfiles</h3>
+                                <p class="text-gray-700 font-medium mb-3 text-sm">Ejecución y desarrollo del proyecto de grado.</p>
+                                <ul class="list-none space-y-2 text-gray-600 text-sm text-left">
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Desarrollo del proyecto</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Seguimiento con tutor</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Avances parciales</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- FASE 4: Pre defensa -->
+                        <div class="flex flex-col lg:items-center text-center lg:text-left lg:relative timeline-item-lg timeline-item-md">
+                            <!-- Icono -->
+                            <div class="flex items-center justify-center w-16 h-16 bg-green-800 text-white rounded-full shadow-lg mb-4 lg:mb-0 lg:absolute lg:top-0 lg:-left-8 z-10 border-4 border-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="m9 14 2 2 4-4"/></svg>
+                            </div>
+                            <!-- Tarjeta -->
+                            <div class="bg-white p-6 rounded-lg shadow-xl border w-full lg:ml-12">
+                                <span class="text-sm font-bold text-green-700">Noviembre 04 - 07</span>
+                                <h3 class="text-xl font-bold text-gray-800 my-2">Fase 4: Pre defensa de proyectos</h3>
+                                <p class="text-gray-700 font-medium mb-3 text-sm">Revisión y correcciones finales del borrador.</p>
+                                <ul class="list-none space-y-2 text-gray-600 text-sm text-left">
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Revisión final del tutor</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Entrega de borrador</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Correcciones finales</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- FASE 5: Defensa del Proyecto -->
+                        <div class="flex flex-col lg:items-center text-center lg:text-left lg:relative timeline-item-lg timeline-item-md">
+                            <!-- Icono -->
+                            <div class="flex items-center justify-center w-16 h-16 bg-green-800 text-white rounded-full shadow-lg mb-4 lg:mb-0 lg:absolute lg:top-0 lg:-left-8 z-10 border-4 border-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.084a1 1 0 0 0 0 1.838l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 6 0 0 0 12 0v-3.5"/></svg>
+                            </div>
+                            <!-- Tarjeta -->
+                            <div class="bg-white p-6 rounded-lg shadow-xl border w-full lg:ml-12">
+                                <span class="text-sm font-bold text-green-700">Noviembre 24 - Diciembre 04</span>
+                                <h3 class="text-xl font-bold text-gray-800 my-2">Fase 5: Defensa del Proyecto</h3>
+                                <p class="text-gray-700 font-medium mb-3 text-sm">Defensa oral ante el tribunal evaluador.</p>
+                                <ul class="list-none space-y-2 text-gray-600 text-sm text-left">
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Preparación de presentación</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Defensa oral</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Calificación final</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- FASE 6: Emisión del Título -->
+                        <div class="flex flex-col lg:items-center text-center lg:text-left lg:relative timeline-item-lg timeline-item-md">
+                            <!-- Icono -->
+                            <div class="flex items-center justify-center w-16 h-16 bg-green-800 text-white rounded-full shadow-lg mb-4 lg:mb-0 lg:absolute lg:top-0 lg:-left-8 z-10 border-4 border-gray-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-stamp"><path d="m6 15-4-4"/><path d="m10 15-4-4"/><path d="m14 15-4-4"/><path d="m18 15-4-4"/><path d="M6 11V6.5a4.5 4.5 0 0 1 9 0V11"/><path d="M18 11V6.5a4.5 4.5 0 0 0-3.5-4.35"/><path d="M12 2v2"/><path d="M10 20v-3.4a1.8 1.8 0 0 1 1.8-1.8h0a1.8 1.8 0 0 1 1.8 1.8V20"/><path d="M4 15.5V20a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4.5"/></svg>
+                            </div>
+                            <!-- Tarjeta -->
+                            <div class="bg-white p-6 rounded-lg shadow-xl border w-full lg:ml-12">
+                                <span class="text-sm font-bold text-green-700">Noviembre</span>
+                                <h3 class="text-xl font-bold text-gray-800 my-2">Fase 6: Emisión del Título</h3>
+                                <p class="text-gray-700 font-medium mb-3 text-sm">Trámites finales y emisión del título profesional.</p>
+                                <ul class="list-none space-y-2 text-gray-600 text-sm text-left">
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Entrega de documentación final</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Pago de aranceles de titulación</li>
+                                    <li class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check text-green-600 w-4 h-4 flex-shrink-0 mr-2"><path d="M20 6 9 17l-5-5"/></svg>Recepción del título</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ===== INICIO DE CAMBIOS: SECCIÓN PASOS DEL PROCESO ===== -->
+                <div id="pasos-section" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Pasos del Proceso</h1>
+                    <p class="text-lg text-gray-600 mb-12 text-center max-w-2xl mx-auto">
+                        Sigue este flujograma para completar exitosamente tu proceso de titulación.
+                    </p>
+                    
+                    <div class="flex flex-col items-center">
+                        <ul class="w-full max-w-2xl">
+                            
+                            <!-- Paso 1: Inscripción -->
+                            <li class="flex flex-col items-center">
+                                <!-- Icono -->
+                                <div class="flex items-center justify-center w-20 h-20 bg-green-800 text-white rounded-full shadow-lg border-4 border-white z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-plus"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                                </div>
+                                <!-- Tarjeta de Contenido -->
+                                <div class="bg-white p-6 rounded-lg shadow-xl border w-full text-center -mt-8 pt-12">
+                                    <h3 class="text-xl font-bold text-gray-800">1. Inscripción al proceso de titulación</h3>
+                                </div>
+                            </li>
+
+                            <!-- Flecha -->
+                            <li class="flex justify-center my-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down text-gray-400"><line x1="12" x2="12" y1="5" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                            </li>
+
+                            <!-- Paso 2: Entrega de documentos -->
+                            <li class="flex flex-col items-center">
+                                <!-- Icono -->
+                                <div class="flex items-center justify-center w-20 h-20 bg-green-800 text-white rounded-full shadow-lg border-4 border-white z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-list"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+                                </div>
+                                <!-- Tarjeta de Contenido -->
+                                <div class="bg-white p-6 rounded-lg shadow-xl border w-full text-center -mt-8 pt-12">
+                                    <h3 class="text-xl font-bold text-gray-800">2. Entrega de documentos</h3>
+                                    <!-- Sub-lista con checkmarks -->
+                                    <ul class="mt-4 space-y-2 text-gray-600">
+                                        <li class="flex items-center justify-center space-x-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle text-green-600"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                            <span>Documentos entregados</span>
+                                        </li>
+                                        <li class="flex items-center justify-center space-x-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle text-green-600"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                            <span>Formulario FMDG-1 completado</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <!-- Flecha -->
+                            <li class="flex justify-center my-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down text-gray-400"><line x1="12" x2="12" y1="5" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                            </li>
+
+                            <!-- Paso 3: Asignación de tutor -->
+                            <li class="flex flex-col items-center">
+                                <!-- Icono -->
+                                <div class="flex items-center justify-center w-20 h-20 bg-green-800 text-white rounded-full shadow-lg border-4 border-white z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                </div>
+                                <!-- Tarjeta de Contenido -->
+                                <div class="bg-white p-6 rounded-lg shadow-xl border w-full text-center -mt-8 pt-12">
+                                    <h3 class="text-xl font-bold text-gray-800">3. Asignación de tutor o tribunal</h3>
+                                </div>
+                            </li>
+
+                            <!-- Flecha -->
+                            <li class="flex justify-center my-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down text-gray-400"><line x1="12" x2="12" y1="5" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                            </li>
+
+                            <!-- Paso 4: Elaboración de proyecto -->
+                            <li class="flex flex-col items-center">
+                                <!-- Icono -->
+                                <div class="flex items-center justify-center w-20 h-20 bg-green-800 text-white rounded-full shadow-lg border-4 border-white z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-ruler"><path d="M15 5 9 1 1 9l6 6"/><path d="m11 11 6 6"/><path d="m8 8 3 3"/><path d="M16 11.33 21.67 17l-1.34 1.34-1.34-1.34-3.32 3.32-1.34-1.34-1.34-1.34 3.32-3.32-1.34-1.34Z"/><path d="m18 13 3-3 1 1-3 3-1-1Z"/></svg>
+                                </div>
+                                <!-- Tarjeta de Contenido -->
+                                <div class="bg-white p-6 rounded-lg shadow-xl border w-full text-center -mt-8 pt-12">
+                                    <h3 class="text-xl font-bold text-gray-800">4. Elaboración de proyecto o informe de grado</h3>
+                                </div>
+                            </li>
+
+                            <!-- Flecha -->
+                            <li class="flex justify-center my-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down text-gray-400"><line x1="12" x2="12" y1="5" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                            </li>
+
+                            <!-- Paso 5: Defensa de grado -->
+                            <li class="flex flex-col items-center">
+                                <!-- Icono -->
+                                <div class="flex items-center justify-center w-20 h-20 bg-green-800 text-white rounded-full shadow-lg border-4 border-white z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.084a1 1 0 0 0 0 1.838l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 6 0 0 0 12 0v-3.5"/></svg>
+                                </div>
+                                <!-- Tarjeta de Contenido -->
+                                <div class="bg-white p-6 rounded-lg shadow-xl border w-full text-center -mt-8 pt-12">
+                                    <h3 class="text-xl font-bold text-gray-800">5. Defensa de grado</h3>
+                                </div>
+                            </li>
+
+                            <!-- Flecha -->
+                            <li class="flex justify-center my-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down text-gray-400"><line x1="12" x2="12" y1="5" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                            </li>
+
+                            <!-- Paso 6: Emisión de título -->
+                            <li class="flex flex-col items-center">
+                                <!-- Icono -->
+                                <div class="flex items-center justify-center w-20 h-20 bg-green-800 text-white rounded-full shadow-lg border-4 border-white z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                                </div>
+                                <!-- Tarjeta de Contenido -->
+                                <div class="bg-white p-6 rounded-lg shadow-xl border w-full text-center -mt-8 pt-12">
+                                    <h3 class="text-xl font-bold text-gray-800">6. Emisión de título</h3>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+                <!-- ===== FIN DE CAMBIOS: SECCIÓN PASOS DEL PROCESO ===== -->
+
+                <!-- SECCIÓN PREGUNTAS FRECUENTES -->
+                <div id="faq-section" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Preguntas Frecuentes</h1>
+                    <div class="bg-white p-8 rounded-lg shadow-md space-y-4">
+                        
+                        <!-- Pregunta 1 -->
+                        <details class="group border-b pb-4">
+                            <summary class="flex justify-between items-center cursor-pointer list-none">
+                                <span class="text-lg font-medium text-gray-800">¿Cuánto tiempo tarda el trámite completo?</span>
+                                <span class="group-open:rotate-180 transition-transform duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                                </span>
+                            </summary>
+                            <p class="text-gray-600 mt-3 ml-4">Una vez que entregas tu expediente completo (con todos los requisitos y proyecto aprobado), el proceso de revisión, defensa y emisión del título suele tardar entre 3 y 6 meses, dependiendo del calendario de la institución.</p>
+                        </details>
+
+                        <!-- Pregunta 2 -->
+                        <details class="group border-b pb-4">
+                            <summary class="flex justify-between items-center cursor-pointer list-none">
+                                <span class="text-lg font-medium text-gray-800">¿Qué modalidades de titulación existen?</span>
+                                <span class="group-open:rotate-180 transition-transform duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                                </span>
+                            </summary>
+                            <p class="text-gray-600 mt-3 ml-4">Las modalidades más comunes incluyen: Proyecto de Grado, Tesis, Examen General de Conocimientos (CENEVAL), Titulación por promedio (Excelencia), y en algunos casos, por experiencia profesional. Consulta el Reglamento de Titulación para ver los detalles de cada una.</p>
+                        </details>
+
+                        <!-- Pregunta 3 -->
+                        <details class="group border-b pb-4">
+                            <summary class="flex justify-between items-center cursor-pointer list-none">
+                                <span class="text-lg font-medium text-gray-800">¿Qué pasa si repruebo mi defensa de proyecto?</span>
+                                <span class="group-open:rotate-180 transition-transform duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                                </span>
+                            </summary>
+                            <p class="text-gray-600 mt-3 ml-4">Generalmente, el jurado te dará un plazo (ej. 6 meses) para realizar las correcciones y mejoras solicitadas. Tendrás una segunda y, a veces, última oportunidad para defender tu proyecto. Revisa el reglamento para conocer el procedimiento exacto.</p>
+                        </details>
+
+                        <!-- Pregunta 4 -->
+                        <details class="group pb-4">
+                            <summary class="flex justify-between items-center cursor-pointer list-none">
+                                <span class="text-lg font-medium text-gray-800">¿Dónde realizo los pagos correspondientes?</span>
+                                <span class="group-open:rotate-180 transition-transform duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+                                </span>
+                            </summary>
+                            <p class="text-gray-600 mt-3 ml-4">Todos los pagos por derechos de titulación se realizan en la oficina de Caja del instituto. Debes presentar el comprobante de pago original al momento de entregar tu expediente.</p>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN CONTACTO -->
+                <div id="contacto-section" class="content-section hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Contacto</h1>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Formulario de Contacto -->
+                        <div class="bg-white p-8 rounded-lg shadow-md">
+                            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Enviar una consulta</h2>
+                            <form action="#" method="POST" class="space-y-6">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700">Nombre Completo</label>
+                                    <input type="text" name="name" id="name" required class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+                                    <input type="email" name="email" id="email" required class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                </div>
+                                <div>
+                                    <label for="message" class="block text-sm font-medium text-gray-700">Mensaje</label>
+                                    <textarea name="message" id="message" rows="4" required class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"></textarea>
+                                </div>
+                                <div>
+                                    <button type="submit" class="w-full bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-green-800 transition-colors duration-300">
+                                        Enviar Mensaje
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Información de Contacto -->
+                        <div class="bg-white p-8 rounded-lg shadow-md">
+                            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Información de la Oficina</h2>
+                            <div class="space-y-4 text-gray-700">
+                                <div class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin w-6 h-6 mr-3 text-green-700 mt-1"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                    <div>
+                                        <h3 class="font-semibold">Dirección</h3>
+                                        <p>Av. Villazón Km 10, Sacaba, Cochabamba, Bolivia</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone w-6 h-6 mr-3 text-green-700 mt-1"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                    <div>
+                                        <h3 class="font-semibold">Teléfono</h3>
+                                        <p>(+591) 4 4760000</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail w-6 h-6 mr-3 text-green-700 mt-1"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                    <div>
+                                        <h3 class="font-semibold">Correo Electrónico</h3>
+                                        <p>titulacion@its.edu.bo</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock w-6 h-6 mr-3 text-green-700 mt-1"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    <div>
+                                        <h3 class="font-semibold">Horario de Atención</h3>
+                                        <p>Lunes a Viernes: 08:30 - 12:30 y 14:30 - 18:30</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal del Chatbot (Sin cambios en HTML) -->
+    <div id="chat-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden flex flex-col" style="height: 70vh; max-height: 500px;">
+            <!-- Encabezado del Chat -->
+            <div class="flex justify-between items-center p-4 bg-green-900 text-white">
+                <h3 class="font-bold text-lg">Asistente virtual de titulación</h3>
+                <button id="close-chat-btn" class="text-white hover:text-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+                </button>
+            </div>
+            
+            <!-- Ventana de Chat -->
+            <div id="chat-window" class="flex-1 p-4 overflow-y-auto bg-gray-100 flex flex-col space-y-2">
+                <!-- Mensaje inicial del Bot -->
+                <div class="chat-bubble bot-bubble p-3 rounded-lg">
+                    ¡Hola! Soy el asistente virtual. ¿En qué puedo ayudarte hoy? (Intenta preguntar por: 'requisitos', 'cronograma' o 'pasos').
+                </div>
+            </div>
+            
+            <!-- Entrada de Mensaje -->
+            <div class="p-4 border-t border-gray-200 bg-white flex">
+                <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                <button id="chat-send-btn" class="bg-green-700 text-white px-4 py-2 rounded-r-lg hover:bg-green-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Lógica de Navegación de Pestañas (Sin cambios) ---
+        const sections = document.querySelectorAll('.content-section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuBtn = document.getElementById('menu-btn');
+        const activeClasses = ['nav-link-active', 'bg-gray-100', 'text-green-900', 'font-semibold'];
+        const inactiveClasses = ['nav-link-inactive', 'text-white', 'hover:bg-green-700'];
+
+        function showSection(sectionName) {
+            sections.forEach(section => section.classList.add('hidden'));
+            const targetSection = document.getElementById(`${sectionName}-section`);
+            if (targetSection) targetSection.classList.remove('hidden');
+
+            navLinks.forEach(link => {
+                link.classList.remove(...activeClasses);
+                link.classList.add(...inactiveClasses);
+                if (link.dataset.section === sectionName) {
+                    link.classList.remove(...inactiveClasses);
+                    link.classList.add(...activeClasses);
+                }
+            });
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+        }
+
+        if (menuBtn) {
+            menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => showSection('inicio'));
+
+        // --- Lógica del Chatbot (Mejorada) ---
+
+        // Seleccionar elementos del DOM para el Chat
+        const chatModal = document.getElementById('chat-modal');
+        const openChatBtn = document.getElementById('open-chat-btn');
+        const closeChatBtn = document.getElementById('close-chat-btn');
+        const chatWindow = document.getElementById('chat-window');
+        const chatInput = document.getElementById('chat-input');
+        const chatSendBtn = document.getElementById('chat-send-btn');
+
+        // Abrir modal
+        if (openChatBtn) {
+            openChatBtn.addEventListener('click', () => {
+                chatModal.classList.remove('hidden');
+                chatInput.focus();
+            });
+        }
+
+        // Cerrar modal con el botón X
+        if (closeChatBtn) {
+            closeChatBtn.addEventListener('click', () => {
+                chatModal.classList.add('hidden');
+            });
+        }
+
+        // Cerrar modal haciendo clic en el fondo oscuro
+        if (chatModal) {
+            chatModal.addEventListener('click', (e) => {
+                if (e.target.id === 'chat-modal') {
+                    chatModal.classList.add('hidden');
+                }
+            });
+        }
+
+        // Enviar mensaje con el botón
+        if (chatSendBtn) {
+            chatSendBtn.addEventListener('click', handleChatSend);
+        }
+
+        // Enviar mensaje presionando "Enter"
+        if (chatInput) {
+            chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Evitar salto de línea
+                    handleChatSend();
+                }
+            });
+        }
+
+        /**
+         * Maneja el envío de mensajes del chat.
+         */
+        function handleChatSend() {
+            const userMessage = chatInput.value.trim();
+            if (userMessage === '') return; // No enviar mensajes vacíos
+
+            // 1. Mostrar el mensaje del usuario
+            addMessageToChat(userMessage, 'user');
+            
+            // 2. Limpiar el input
+            chatInput.value = '';
+
+            // 3. Simular respuesta del bot
+            setTimeout(() => {
+                // ===== CAMBIO: Usar la nueva base de conocimientos del PDF =====
+                const botResponse = generateBotResponse(userMessage);
+                addMessageToChat(botResponse, 'bot');
+            }, 700); // Simular un pequeño retraso
+        }
+
+        /**
+         * Añade un mensaje (burbuja) a la ventana del chat.
+         * @param {string} message - El texto del mensaje.
+         * @param {'user' | 'bot'} sender - Quién envía el mensaje.
+         */
+        function addMessageToChat(message, sender) {
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble p-3 rounded-lg'; // Clases base
+            
+            if (sender === 'user') {
+                bubble.classList.add('user-bubble');
+            } else {
+                bubble.classList.add('bot-bubble');
+            }
+            
+            // Convertir saltos de línea (\n) en <br> para respuestas formateadas
+            bubble.innerHTML = message.replace(/\n/g, '<br>');
+            chatWindow.appendChild(bubble);
+
+            // Hacer scroll automático al final
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // --- Base de Conocimientos del Chatbot (Actualizada con el PDF) ---
+        const knowledgeBase = [
+            {
+                keywords: ['requisito', 'documento', 'papeles', 'necesito'],
+                response: `¡Claro! Los requisitos se dividen en varias categorías.
+                
+**Académicos:**
+- Haber aprobado todas las materias.
+- Práctica laboral (PEC) certificada.
+- 3 ejemplares del proyecto empastado (forro verde, letras doradas).
+
+**Documentación Personal:**
+- Fotocopias legalizadas (Bachiller, Nacimiento, Carnet).
+- 2 fotografías 4x4 (fondo rojo/azul).
+- Formulario de admisión.
+
+**Institucionales:**
+- Formulario FMDG-1.
+- Comprobante de pago de aranceles.
+- Reglamento de titulación firmado.
+
+Puedes ver los detalles completos en la sección 'Requisitos'.`
+            },
+            {
+                keywords: ['convocatoria', 'estructura', 'perfil', 'pre-defensa', 'predefensa'],
+                response: "Puedes descargar todos los documentos oficiales como la 'Convocatoria a defensa', 'Estructura de perfil' y 'Elaboración de pre-defensa' en la sección 'Requisitos', bajo el título 'Reglamentos y Documentos Oficiales'."
+            },
+            {
+                keywords: ['cronograma', 'fecha', 'cuándo', 'calendario', 'recepcion', 'defensa'],
+                response: `Este es el cronograma general por fases:
+- **Fase 1: Inscripción** (Abril - Junio)
+- **Fase 2: Aprobación de Perfil** (Febrero - Junio)
+- **Fase 3: Defensa de perfiles** (Junio 12 - 31)
+- **Fase 4: Pre defensa** (Noviembre 04 - 07)
+- **Fase 5: Defensa del Proyecto** (Noviembre 24 - Diciembre 04)
+- **Fase 6: Emisión del Título** (Noviembre)
+Puedes consultarlo en detalle en la sección 'Cronograma'.`
+            },
+            {
+                // ===== INFORMACIÓN DE PASOS ACTUALIZADA AQUÍ =====
+                keywords: ['pasos', 'proceso', 'guia', 'hacer', 'flujograma'],
+                response: `El proceso sigue 6 pasos principales:
+1. **Inscripción** al proceso de titulación.
+2. **Entrega de documentos** (incluyendo el FMDG-1).
+3. **Asignación** de tutor o tribunal.
+4. **Elaboración** de proyecto o informe.
+5. **Defensa** de grado.
+6. **Emisión** de título.
+Puedes ver el flujograma visual completo en la sección 'Pasos del proceso'.`
+            },
+            {
+                keywords: ['contacto', 'telefono', 'correo', 'direccion', 'ubicacion', 'horario', 'atienden'],
+                response: `¡Con gusto! Puedes contactarnos:
+- **Teléfono:** (+591) 4 4760000
+- **Correo:** titulacion@its.edu.bo
+- **Dirección:** Av. Villazón Km 10, Sacaba.
+- **Horario:** Lunes a Viernes de 08:30-12:30 y 14:30-18:30.`
+            },
+            {
+                keywords: ['pago', 'pagar', 'costo', 'caja', 'depositar', 'arancel'],
+                response: "Todos los pagos (aranceles, derecho a defensa) se realizan en la oficina de Caja del instituto. Debes presentar los comprobantes (original y fotocopia según se pida) al entregar tu expediente."
+            },
+            {
+                keywords: ['cuanto', 'tiempo', 'tarda', 'demora', 'dura'],
+                response: "Una vez que entregas tu expediente completo, el proceso (revisión, defensa y emisión del título) suele tardar entre 3 y 6 meses. Puedes ver más en la sección 'Preguntas frecuentes'."
+            },
+            {
+                keywords: ['modalidad', 'tipos', 'opciones'],
+                response: `Las modalidades de titulación disponibles son:
+- Proyecto de Grado
+- Examen de Grado
+- Trabajo Dirigido
+- Excelencia Académica
+- Equivalencia de Título`
+            },
+            {
+                keywords: ['repruebo', 'fallo', 'pasa si', 'reprobar'],
+                response: "Si repruebas tu defensa, no te preocupes. Generalmente, el jurado te dará un plazo (ej. 6 meses) para realizar correcciones y tendrás una segunda oportunidad. Revisa el reglamento para el procedimiento exacto."
+            },
+            {
+                keywords: ['formulario', 'fmdg-1', 'fmdg1', 'admision'],
+                response: "El Formulario FMDG-1 está disponible en la sección 'Inicio'. El Formulario de admisión al proceso está disponible en línea, puedes encontrar el enlace en la nueva sección 'Requisitos' (tarjeta de Documentación)."
+            },
+            {
+                keywords: ['reglamento'],
+                response: "Puedes descargar el Reglamento de Titulación directamente desde el botón 'Reglamento' en la sección 'Inicio'. También debes presentar una copia firmada como parte de los 'Requisitos Institucionales'."
+            },
+            {
+                keywords: ['fotos', 'fotografia'],
+                response: "Necesitas 2 fotografías a color, tamaño 4x4. Deben ser con fondo rojo o azul y vistiendo ropa formal. Es parte de la 'Documentación Personal'."
+            },
+            {
+                keywords: ['empastado', 'proyecto', 'ejemplares'],
+                response: "Debes entregar 3 ejemplares de tu proyecto empastado. El forro debe ser de color verde oscuro y con letras doradas."
+            },
+            {
+                keywords: ['hola', 'buenos', 'buenas', 'saludos'],
+                response: '¡Hola! Soy el asistente virtual de titulación. ¿En qué puedo ayudarte hoy? (Intenta preguntar por "requisitos", "fechas", "costos", etc.)'
+            },
+            {
+                keywords: ['gracias', 'adios', 'chao', 'excelente'],
+                response: '¡De nada! Ha sido un placer ayudarte. ¡Mucho éxito en tu titulación!'
+            }
+        ];
+
+        const defaultResponse = "No entendí muy bien tu consulta. Intenta ser más específico o pregunta usando palabras clave como 'requisitos', 'fechas', 'pagos' o 'contacto'.";
+
+        /**
+         * Normaliza el texto: lo convierte a minúsculas y quita acentos.
+         * @param {string} text - El texto a normalizar.
+         * @returns {string} - El texto normalizado.
+         */
+        function normalizeText(text) {
+            return text
+                .toLowerCase()
+                .normalize("NFD") // Descompone caracteres (ej. 'é' -> 'e' + '´')
+                .replace(/[\u0300-\u036f]/g, ""); // Elimina los diacríticos (acentos)
+        }
+
+        /**
+         * Genera una respuesta simulada del bot basada en el mensaje del usuario.
+         * @param {string} userMessage - El mensaje del usuario.
+         * @returns {string} - La respuesta del bot.
+         */
+        function generateBotResponse(userMessage) {
+            const msg = normalizeText(userMessage);
+
+            // Itera sobre la base de conocimientos
+            for (const rule of knowledgeBase) {
+                // Si alguna de las palabras clave de la regla está en el mensaje del usuario...
+                if (rule.keywords.some(keyword => msg.includes(keyword))) {
+                    return rule.response; // Devuelve la respuesta correspondiente
+                }
+            }
+
+            // Si no se encuentra ninguna regla, devuelve la respuesta por defecto
+            return defaultResponse;
+        }
+        // --- ===== FIN DE CAMBIOS: Lógica del Chatbot ===== ---
+    </script>
+</body>
+</html>
